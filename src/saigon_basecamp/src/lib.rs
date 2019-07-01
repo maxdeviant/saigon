@@ -1,9 +1,13 @@
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
 pub struct Payload {
     pub message: String,
     pub creator: Creator,
     pub callback_url: String,
 }
 
+#[derive(Debug, Deserialize)]
 pub struct Creator {
     pub id: i32,
     pub attachable_sgid: String,
@@ -21,6 +25,7 @@ pub struct Creator {
     pub company: Company,
 }
 
+#[derive(Debug, Deserialize)]
 pub struct Company {
     pub id: i32,
     pub name: String,
