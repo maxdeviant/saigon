@@ -1,7 +1,5 @@
-[package]
-name = "saigon"
-version = "0.1.0"
-authors = ["Marshall Bowers <elliott.codes@gmail.com>"]
-edition = "2018"
-
-[dependencies]
+[workspace]
+members = [
+    "src/saigon",
+    "src/saigon_basecamp"
+]
