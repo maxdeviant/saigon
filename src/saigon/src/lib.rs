@@ -28,7 +28,7 @@ pub struct Config {
 
 pub struct Bot {
     config: Config,
-    plugins: Vec<Box<dyn Plugin>>,
+    plugins: Vec<Box<dyn Plugin + Sync>>,
 }
 
 impl Bot {
@@ -59,7 +59,7 @@ impl Bot {
 
 pub struct BotBuilder {
     addr: SocketAddr,
-    plugins: Vec<Box<dyn Plugin>>,
+    plugins: Vec<Box<dyn Plugin + Sync>>,
 }
 
 impl BotBuilder {
@@ -70,8 +70,8 @@ impl BotBuilder {
         }
     }
 
-    pub fn add_plugin<P: Plugin + 'static>(&mut self, plugin: P) -> &mut Self {
-        self.plugins.push(Box::new(plugin));
+    pub fn add_plugin(mut self, plugin: Box<dyn Plugin + Sync>) -> Self {
+        self.plugins.push(plugin);
         self
     }
 
