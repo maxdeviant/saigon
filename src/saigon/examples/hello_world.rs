@@ -3,6 +3,10 @@ use saigon::{BotBuilder, Plugin};
 pub struct HelloWorld {}
 
 impl Plugin for HelloWorld {
+    fn name(&self) -> String {
+        "HelloWorld".into()
+    }
+
     fn version(&self) -> String {
         "1.0.0".into()
     }

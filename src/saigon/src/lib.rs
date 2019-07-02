@@ -8,6 +8,8 @@ use std::net::SocketAddr;
 use rocket::State;
 
 pub trait Plugin {
+    fn name(&self) -> String;
+
     fn version(&self) -> String;
 }
 
@@ -38,7 +40,7 @@ impl Bot {
     pub fn start(self) {
         rocket::ignite()
             .manage(self)
-            .mount("/", routes![index])
+            .mount("/", routes![index, plugins])
             .launch();
     }
 }
@@ -78,4 +80,12 @@ fn index(bot: State<Bot>, payload: String) -> String {
     }
 
     "Hello!".into()
+}
+
+#[get("/plugins")]
+fn plugins(bot: State<Bot>) -> String {
+    bot.plugins
+        .iter()
+        .map(|plugin| format!("{}: v{}", plugin.name(), plugin.version()))
+        .collect::<String>()
 }
