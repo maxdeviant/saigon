@@ -5,4 +5,4 @@ authors = ["Marshall Bowers <elliott.codes@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-hyper = "0.12"
+rocket = "0.4"
