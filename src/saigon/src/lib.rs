@@ -11,6 +11,8 @@ pub trait Plugin {
     fn name(&self) -> String;
 
     fn version(&self) -> String;
+
+    fn receive(&self, command: &Command) -> String;
 }
 
 #[derive(Debug)]
@@ -75,8 +77,11 @@ impl BotBuilder {
 fn index(bot: State<Bot>, payload: String) -> String {
     println!("Payload is {}", payload);
 
+    let command = Command { value: payload };
+
     for plugin in bot.plugins.iter() {
-        println!("Plugin version: {}", plugin.version());
+        let response = plugin.receive(&command);
+        println!("Response from {} was {}", plugin.name(), response);
     }
 
     "Hello!".into()
