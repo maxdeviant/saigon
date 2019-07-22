@@ -103,13 +103,6 @@ fn index(bot: State<Bot>, payload: String) -> String {
         }
     }
 
-    let command = Command { value: payload };
-
-    for plugin in bot.plugins.iter() {
-        let response = plugin.receive(&command);
-        println!("Response from {} was {}", plugin.name(), response);
-    }
-
     "Hello!".into()
 }
 
