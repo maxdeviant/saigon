@@ -20,15 +20,6 @@ pub struct Command {
     pub value: String,
 }
 
-#[derive(Debug)]
-pub struct Message {
-    pub value: String,
-}
-
-pub trait Receive {
-    fn receive(&mut self, command: Command);
-}
-
 pub struct Config {
     addr: SocketAddr,
 }
