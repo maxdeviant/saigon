@@ -80,11 +80,15 @@ impl Bot {
     }
 }
 
+pub type BoxedSource = Box<dyn Source + Send + Sync>;
+
+pub type BoxedPlugin = Box<dyn Plugin + Send + Sync>;
+
 pub struct BotBuilder {
     log_level: LevelFilter,
     addr: SocketAddr,
-    sources: Vec<Box<dyn Source + Send + Sync>>,
-    plugins: Vec<Box<dyn Plugin + Send + Sync>>,
+    sources: Vec<BoxedSource>,
+    plugins: Vec<BoxedPlugin>,
 }
 
 impl BotBuilder {
@@ -100,12 +104,12 @@ impl BotBuilder {
         self
     }
 
-    pub fn add_source(mut self, source: Box<dyn Source + Send + Sync>) -> Self {
+    pub fn add_source(mut self, source: BoxedSource) -> Self {
         self.sources.push(source);
         self
     }
 
-    pub fn add_plugin(mut self, plugin: Box<dyn Plugin + Send + Sync>) -> Self {
+    pub fn add_plugin(mut self, plugin: BoxedPlugin) -> Self {
         self.plugins.push(plugin);
         self
     }
