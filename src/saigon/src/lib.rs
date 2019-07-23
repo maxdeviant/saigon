@@ -149,13 +149,13 @@ fn index(bot: State<Bot>, payload: String) -> String {
     debug!(target: "saigon", "Command is {:?}", &command);
 
     if let Some(command) = command {
-        for plugin in bot.plugins.iter() {
-            let response = plugin.receive(&command);
-            debug!(target: "saigon", "Response from {} was {}", plugin.name(), response);
-        }
+        bot.plugins
+            .iter()
+            .map(|plugin| plugin.receive(&command))
+            .collect::<String>()
+    } else {
+        "NO COMMAND".into()
     }
-
-    "Hello!".into()
 }
 
 #[get("/sources")]
