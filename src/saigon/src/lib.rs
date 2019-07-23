@@ -29,6 +29,9 @@ impl Bot {
         self.configure_logger()
             .expect("Failed to configure logging");
 
+        std::env::set_var("ROCKET_ADDRESS", format!("{}", self.config.addr.ip()));
+        std::env::set_var("ROCKET_PORT", format!("{}", self.config.addr.port()));
+
         rocket::ignite()
             .manage(self)
             .mount("/", routes![index, sources, plugins])
