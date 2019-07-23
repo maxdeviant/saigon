@@ -3,6 +3,7 @@
 #[macro_use]
 extern crate rocket;
 
+use log::{debug, LevelFilter};
 use std::net::SocketAddr;
 
 use rocket::State;
@@ -33,6 +34,7 @@ pub struct Command {
 }
 
 pub struct Config {
+    log_level: LevelFilter,
     addr: SocketAddr,
 }
 
@@ -44,14 +46,42 @@ pub struct Bot {
 
 impl Bot {
     pub fn start(self) {
+        self.configure_logger()
+            .expect("Failed to configure logging");
+
         rocket::ignite()
             .manage(self)
             .mount("/", routes![index, sources, plugins])
             .launch();
     }
+
+    fn configure_logger(&self) -> Result<(), log::SetLoggerError> {
+        use fern::colors::{Color, ColoredLevelConfig};
+
+        let colors = ColoredLevelConfig::new()
+            .error(Color::Magenta)
+            .warn(Color::Yellow)
+            .info(Color::Blue)
+            .debug(Color::Cyan)
+            .trace(Color::Green);
+
+        fern::Dispatch::new()
+            .format(move |out, message, record| {
+                out.finish(format_args!(
+                    "[{}][{}] {}",
+                    record.target(),
+                    colors.color(record.level()),
+                    message
+                ))
+            })
+            .level(self.config.log_level)
+            .chain(std::io::stdout())
+            .apply()
+    }
 }
 
 pub struct BotBuilder {
+    log_level: LevelFilter,
     addr: SocketAddr,
     sources: Vec<Box<dyn Source + Send + Sync>>,
     plugins: Vec<Box<dyn Plugin + Send + Sync>>,
@@ -61,9 +91,13 @@ impl BotBuilder {
     pub fn new<A: Into<SocketAddr>>(addr: A) -> Self {
         Self {
             addr: addr.into(),
-            sources: Vec::new(),
-            plugins: Vec::new(),
+            ..Default::default()
         }
+    }
+
+    pub fn log_level(mut self, level: LevelFilter) -> Self {
+        self.log_level = level;
+        self
     }
 
     pub fn add_source(mut self, source: Box<dyn Source + Send + Sync>) -> Self {
@@ -78,28 +112,42 @@ impl BotBuilder {
 
     pub fn build(self) -> Result<Bot, &'static str> {
         Ok(Bot {
-            config: Config { addr: self.addr },
+            config: Config {
+                log_level: self.log_level,
+                addr: self.addr,
+            },
             sources: self.sources,
             plugins: self.plugins,
         })
     }
 }
 
+impl Default for BotBuilder {
+    fn default() -> Self {
+        Self {
+            log_level: LevelFilter::Info,
+            addr: ([127, 0, 0, 1], 3000).into(),
+            sources: Vec::new(),
+            plugins: Vec::new(),
+        }
+    }
+}
+
 #[post("/", data = "<payload>")]
 fn index(bot: State<Bot>, payload: String) -> String {
-    println!("Payload is {}", payload);
+    debug!(target: "saigon", "Payload is {}", payload);
 
     let command = bot
         .sources
         .iter()
         .find_map(|source| source.handle(&payload));
 
-    println!("Command is {:?}", &command);
+    debug!(target: "saigon", "Command is {:?}", &command);
 
     if let Some(command) = command {
         for plugin in bot.plugins.iter() {
             let response = plugin.receive(&command);
-            println!("Response from {} was {}", plugin.name(), response);
+            debug!(target: "saigon", "Response from {} was {}", plugin.name(), response);
         }
     }
 
