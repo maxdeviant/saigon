@@ -9,6 +9,10 @@ use log::{debug, LevelFilter};
 use rocket::State;
 use saigon_core::{Plugin, Source};
 
+pub type BoxedSource = Box<dyn Source + Send + Sync>;
+
+pub type BoxedPlugin = Box<dyn Plugin + Send + Sync>;
+
 pub struct Config {
     log_level: LevelFilter,
     addr: SocketAddr,
@@ -16,8 +20,8 @@ pub struct Config {
 
 pub struct Bot {
     config: Config,
-    sources: Vec<Box<dyn Source + Send + Sync>>,
-    plugins: Vec<Box<dyn Plugin + Send + Sync>>,
+    sources: Vec<BoxedSource>,
+    plugins: Vec<BoxedPlugin>,
 }
 
 impl Bot {
@@ -55,10 +59,6 @@ impl Bot {
             .apply()
     }
 }
-
-pub type BoxedSource = Box<dyn Source + Send + Sync>;
-
-pub type BoxedPlugin = Box<dyn Plugin + Send + Sync>;
 
 pub struct BotBuilder {
     log_level: LevelFilter,
