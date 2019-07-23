@@ -1,4 +1,25 @@
+use saigon_core::{Command, Source};
 use serde::Deserialize;
+
+pub struct Basecamp;
+
+impl Source for Basecamp {
+    fn name(&self) -> String {
+        env!("CARGO_PKG_NAME").into()
+    }
+
+    fn version(&self) -> String {
+        env!("CARGO_PKG_VERSION").into()
+    }
+
+    fn handle(&self, payload: &String) -> Option<Command> {
+        let payload: Option<Payload> = serde_json::from_str(payload).ok();
+
+        payload.map(|payload| Command {
+            value: payload.message,
+        })
+    }
+}
 
 #[derive(Debug, Deserialize)]
 pub struct Payload {

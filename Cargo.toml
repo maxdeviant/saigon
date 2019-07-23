@@ -2,5 +2,5 @@
 members = [
     "src/saigon",
     "src/saigon_core",
-    "src/saigon_basecamp"
+    "src/saigon_source_basecamp"
 ]
