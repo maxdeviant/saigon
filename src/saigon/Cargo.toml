@@ -8,3 +8,4 @@ edition = "2018"
 fern = { version = "0.5", features = ["colored"] }
 log = "0.4"
 rocket = "0.4"
+saigon_core = { path = "../saigon_core" }

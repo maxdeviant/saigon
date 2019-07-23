@@ -1,4 +1,5 @@
-use saigon::{BotBuilder, Command, Plugin, Source};
+use saigon::BotBuilder;
+use saigon_core::{Command, Plugin, Source};
 
 pub struct HelloWorld;
 
