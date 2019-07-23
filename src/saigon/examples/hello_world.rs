@@ -1,4 +1,4 @@
-use saigon::{BotBuilder, Command, Source, Plugin};
+use saigon::{BotBuilder, Command, Plugin, Source};
 
 pub struct HelloWorld;
 
@@ -12,7 +12,9 @@ impl Source for HelloWorld {
     }
 
     fn handle(&self, payload: &String) -> Option<Command> {
-        Some(Command { value: payload.clone() })
+        Some(Command {
+            value: payload.clone(),
+        })
     }
 }
 
