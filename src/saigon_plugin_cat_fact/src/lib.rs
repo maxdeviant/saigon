@@ -18,6 +18,10 @@ impl Plugin for CatFact {
         env!("CARGO_PKG_VERSION").into()
     }
 
+    fn help(&self) -> Option<String> {
+        Some("cat fact - returns a fun fact about cats.".into())
+    }
+
     fn receive(&mut self, command: &Command) -> PluginResult {
         match command.value.as_ref() {
             "cat fact" => {

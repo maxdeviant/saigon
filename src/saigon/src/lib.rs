@@ -132,6 +132,15 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
     debug!(target: "saigon", "Command is {:?}", &command);
 
     if let Some(command) = command {
+        if command.value.to_lowercase() == "help" {
+            return bot
+                .read()
+                .plugins
+                .iter()
+                .filter_map(|plugin| plugin.help())
+                .collect::<String>();
+        }
+
         let mut bot = bot.write();
 
         bot.plugins
