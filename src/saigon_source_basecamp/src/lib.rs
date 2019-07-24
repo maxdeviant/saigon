@@ -36,7 +36,7 @@ pub struct Creator {
     pub email_address: String,
     pub personable_type: String,
     pub title: String,
-    pub bio: String,
+    pub bio: Option<String>,
     pub created_at: String,
     pub updated_at: String,
     pub admin: bool,
