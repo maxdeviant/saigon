@@ -138,7 +138,8 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
                 .plugins
                 .iter()
                 .filter_map(|plugin| plugin.help())
-                .collect::<String>();
+                .collect::<Vec<String>>()
+                .join("\n");
         }
 
         let mut bot = bot.write();
