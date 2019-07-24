@@ -121,16 +121,19 @@ impl Default for BotBuilder {
 fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
     debug!(target: "saigon", "Payload is {}", payload);
 
-    let mut bot = bot.write();
+    let command = {
+        let mut bot = bot.write();
 
-    let command = bot
-        .sources
-        .iter_mut()
-        .find_map(|source| source.handle(&payload));
+        bot.sources
+            .iter_mut()
+            .find_map(|source| source.handle(&payload))
+    };
 
     debug!(target: "saigon", "Command is {:?}", &command);
 
     if let Some(command) = command {
+        let mut bot = bot.write();
+
         bot.plugins
             .iter_mut()
             .filter_map(|plugin| plugin.receive(&command).ok())
