@@ -1,5 +1,5 @@
 use saigon::BotBuilder;
-use saigon_core::{Command, Plugin, Source, User, UserId};
+use saigon_core::{Command, Plugin, PluginResponse, PluginResult, Source, User, UserId};
 
 pub struct HelloWorld;
 
@@ -32,8 +32,11 @@ impl Plugin for HelloWorld {
         "1.0.0".into()
     }
 
-    fn receive(&mut self, command: &Command) -> String {
-        format!("Hello, world! The command was: {}", command.value)
+    fn receive(&mut self, command: &Command) -> PluginResult {
+        Ok(PluginResponse::Success(format!(
+            "Hello, world! The command was: {}",
+            command.value
+        )))
     }
 }
 

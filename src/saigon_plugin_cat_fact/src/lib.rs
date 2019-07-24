@@ -1,4 +1,4 @@
-use saigon_core::{Command, Plugin};
+use saigon_core::{Command, Plugin, PluginResponse, PluginResult};
 use serde::Deserialize;
 
 pub struct CatFact;
@@ -18,7 +18,7 @@ impl Plugin for CatFact {
         env!("CARGO_PKG_VERSION").into()
     }
 
-    fn receive(&mut self, command: &Command) -> String {
+    fn receive(&mut self, command: &Command) -> PluginResult {
         match command.value.as_ref() {
             "cat fact" => {
                 let res: CatFactJson = reqwest::get("https://catfact.ninja/fact")
@@ -26,9 +26,9 @@ impl Plugin for CatFact {
                     .json()
                     .unwrap();
 
-                res.fact
+                Ok(PluginResponse::Success(res.fact))
             }
-            _ => "".into(),
+            _ => Ok(PluginResponse::Ignore),
         }
     }
 }

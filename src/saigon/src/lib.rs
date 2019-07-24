@@ -8,7 +8,7 @@ use std::net::SocketAddr;
 use log::{debug, LevelFilter};
 use parking_lot::RwLock;
 use rocket::State;
-use saigon_core::{Plugin, Source};
+use saigon_core::{Plugin, PluginResponse, Source};
 
 pub type BoxedSource = Box<dyn Source + Send + Sync>;
 
@@ -133,7 +133,11 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
     if let Some(command) = command {
         bot.plugins
             .iter_mut()
-            .map(|plugin| plugin.receive(&command))
+            .filter_map(|plugin| plugin.receive(&command).ok())
+            .filter_map(|res| match res {
+                PluginResponse::Success(res) => Some(res),
+                PluginResponse::Ignore => None,
+            })
             .collect::<String>()
     } else {
         "NO COMMAND".into()
