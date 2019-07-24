@@ -2,5 +2,6 @@
 members = [
     "src/saigon",
     "src/saigon_core",
+    "src/saigon_plugin_cat_fact",
     "src/saigon_source_basecamp"
 ]
