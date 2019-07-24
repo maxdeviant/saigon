@@ -13,9 +13,9 @@ impl Source for Basecamp {
     }
 
     fn handle(&mut self, payload: &str) -> Option<Command> {
-        let payload: Option<Payload> = serde_json::from_str(payload).ok();
+        let payload: Payload = serde_json::from_str(payload).ok()?;
 
-        payload.map(|payload| Command {
+        Some(Command {
             value: payload.message,
         })
     }
