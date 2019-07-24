@@ -7,5 +7,6 @@ edition = "2018"
 [dependencies]
 fern = { version = "0.5", features = ["colored"] }
 log = "0.4"
+parking_lot = "0.9"
 rocket = "0.4"
 saigon_core = { path = "../saigon_core" }

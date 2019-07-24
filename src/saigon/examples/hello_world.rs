@@ -12,7 +12,7 @@ impl Source for HelloWorld {
         "1.0.0".into()
     }
 
-    fn handle(&self, payload: &String) -> Option<Command> {
+    fn handle(&mut self, payload: &String) -> Option<Command> {
         Some(Command {
             value: payload.clone(),
         })
@@ -28,15 +28,15 @@ impl Plugin for HelloWorld {
         "1.0.0".into()
     }
 
-    fn receive(&self, command: &Command) -> String {
+    fn receive(&mut self, command: &Command) -> String {
         format!("Hello, world! The command was: {}", command.value)
     }
 }
 
 fn main() {
     let bot = BotBuilder::new(([127, 0, 0, 1], 3000))
-        .add_source(Box::new(HelloWorld {}))
-        .add_plugin(Box::new(HelloWorld {}))
+        .add_source(Box::new(HelloWorld))
+        .add_plugin(Box::new(HelloWorld))
         .build()
         .unwrap();
     bot.start();

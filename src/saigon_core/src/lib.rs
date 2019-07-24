@@ -3,7 +3,7 @@ pub trait Source {
 
     fn version(&self) -> String;
 
-    fn handle(&self, payload: &String) -> Option<Command>;
+    fn handle(&mut self, payload: &String) -> Option<Command>;
 }
 
 pub enum PluginResponse {
@@ -15,7 +15,7 @@ pub trait Plugin {
 
     fn version(&self) -> String;
 
-    fn receive(&self, command: &Command) -> String;
+    fn receive(&mut self, command: &Command) -> String;
 }
 
 #[derive(Debug)]

@@ -6,6 +6,7 @@ extern crate rocket;
 use std::net::SocketAddr;
 
 use log::{debug, LevelFilter};
+use parking_lot::RwLock;
 use rocket::State;
 use saigon_core::{Plugin, Source};
 
@@ -33,7 +34,7 @@ impl Bot {
         std::env::set_var("ROCKET_PORT", format!("{}", self.config.addr.port()));
 
         rocket::ignite()
-            .manage(self)
+            .manage(RwLock::new(self))
             .mount("/", routes![index, sources, plugins])
             .launch();
     }
@@ -117,19 +118,21 @@ impl Default for BotBuilder {
 }
 
 #[post("/", data = "<payload>")]
-fn index(bot: State<Bot>, payload: String) -> String {
+fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
     debug!(target: "saigon", "Payload is {}", payload);
+
+    let mut bot = bot.write();
 
     let command = bot
         .sources
-        .iter()
+        .iter_mut()
         .find_map(|source| source.handle(&payload));
 
     debug!(target: "saigon", "Command is {:?}", &command);
 
     if let Some(command) = command {
         bot.plugins
-            .iter()
+            .iter_mut()
             .map(|plugin| plugin.receive(&command))
             .collect::<String>()
     } else {
@@ -138,16 +141,18 @@ fn index(bot: State<Bot>, payload: String) -> String {
 }
 
 #[get("/sources")]
-fn sources(bot: State<Bot>) -> String {
-    bot.sources
+fn sources(bot: State<RwLock<Bot>>) -> String {
+    bot.read()
+        .sources
         .iter()
         .map(|source| format!("{}: v{}\n", source.name(), source.version()))
         .collect::<String>()
 }
 
 #[get("/plugins")]
-fn plugins(bot: State<Bot>) -> String {
-    bot.plugins
+fn plugins(bot: State<RwLock<Bot>>) -> String {
+    bot.read()
+        .plugins
         .iter()
         .map(|plugin| format!("{}: v{}\n", plugin.name(), plugin.version()))
         .collect::<String>()
