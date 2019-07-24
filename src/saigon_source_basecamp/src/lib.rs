@@ -1,4 +1,4 @@
-use saigon_core::{Command, Source};
+use saigon_core::{Command, Source, User, UserId};
 use serde::Deserialize;
 
 pub struct Basecamp;
@@ -16,6 +16,10 @@ impl Source for Basecamp {
         let payload: Payload = serde_json::from_str(payload).ok()?;
 
         Some(Command {
+            user: User {
+                id: UserId(payload.creator.id.to_string()),
+                full_name: payload.creator.name,
+            },
             value: payload.command,
         })
     }

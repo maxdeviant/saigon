@@ -1,5 +1,5 @@
 use saigon::BotBuilder;
-use saigon_core::{Command, Plugin, Source};
+use saigon_core::{Command, Plugin, Source, User, UserId};
 
 pub struct HelloWorld;
 
@@ -14,6 +14,10 @@ impl Source for HelloWorld {
 
     fn handle(&mut self, payload: &str) -> Option<Command> {
         Some(Command {
+            user: User {
+                id: UserId("1234".into()),
+                full_name: "Test".into(),
+            },
             value: payload.to_string(),
         })
     }
