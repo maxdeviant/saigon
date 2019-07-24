@@ -16,14 +16,14 @@ impl Source for Basecamp {
         let payload: Payload = serde_json::from_str(payload).ok()?;
 
         Some(Command {
-            value: payload.message,
+            value: payload.command,
         })
     }
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Payload {
-    pub message: String,
+    pub command: String,
     pub creator: Creator,
     pub callback_url: String,
 }
@@ -41,6 +41,7 @@ pub struct Creator {
     pub updated_at: String,
     pub admin: bool,
     pub owner: bool,
+    pub client: bool,
     pub time_zone: String,
     pub avatar_url: String,
     pub company: Company,
