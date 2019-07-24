@@ -12,7 +12,7 @@ impl Source for Basecamp {
         env!("CARGO_PKG_VERSION").into()
     }
 
-    fn handle(&mut self, payload: &String) -> Option<Command> {
+    fn handle(&mut self, payload: &str) -> Option<Command> {
         let payload: Option<Payload> = serde_json::from_str(payload).ok();
 
         payload.map(|payload| Command {

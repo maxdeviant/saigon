@@ -12,9 +12,9 @@ impl Source for HelloWorld {
         "1.0.0".into()
     }
 
-    fn handle(&mut self, payload: &String) -> Option<Command> {
+    fn handle(&mut self, payload: &str) -> Option<Command> {
         Some(Command {
-            value: payload.clone(),
+            value: payload.to_string(),
         })
     }
 }
