@@ -2,8 +2,9 @@
 
 //! Contains the core types for Saigon.
 
-/// The result of a [`Plugin`] handling a [`Command`].
-pub type PluginResult = Result<PluginResponse, &'static str>;
+mod plugin;
+
+pub use plugin::*;
 
 /// A Saigon source.
 pub trait Source {
@@ -15,32 +16,6 @@ pub trait Source {
 
     /// Handles a payload for the source to produce a [`Command`].
     fn handle(&mut self, payload: &str) -> Option<Command>;
-}
-
-/// The response from a [`Plugin`].
-pub enum PluginResponse {
-    /// The plugin ignored the [`Command`].
-    Ignore,
-
-    /// The plugin successfully handled the [`Command`].
-    Success(String),
-}
-
-/// A Saigon plugin.
-pub trait Plugin {
-    /// Returns the plugin's name.
-    fn name(&self) -> String;
-
-    /// Returns the plugin's version.
-    fn version(&self) -> String;
-
-    /// Returns the help text for the plugin.
-    fn help(&self) -> Option<String> {
-        None
-    }
-
-    /// Receives a [`Command`] for the plugin to process.
-    fn receive(&mut self, command: &Command) -> PluginResult;
 }
 
 /// The ID of a [`User`].
