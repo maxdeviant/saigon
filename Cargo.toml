@@ -1,8 +1,8 @@
 [workspace]
 members = [
     "src/saigon",
+    "src/saigon_adapter_basecamp",
     "src/saigon_core",
     "src/saigon_plugin_cat_fact",
-    "src/saigon_plugin_saucenao",
-    "src/saigon_source_basecamp"
+    "src/saigon_plugin_saucenao"
 ]
