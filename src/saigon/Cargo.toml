@@ -1,7 +1,11 @@
 [package]
 name = "saigon"
 version = "0.1.0"
+description = "A framework for building service-agnostic chatbots."
+repository = "https://github.com/maxdeviant/saigon"
+keywords = ["saigon"]
 authors = ["Marshall Bowers <elliott.codes@gmail.com>"]
+license = "MIT"
 edition = "2018"
 
 [dependencies]
@@ -9,4 +13,4 @@ fern = { version = "0.5", features = ["colored"] }
 log = "0.4"
 parking_lot = "0.9"
 rocket = "0.4"
-saigon_core = { path = "../saigon_core" }
+saigon_core = { path = "../saigon_core", version = "0.1" }
