@@ -114,6 +114,12 @@ pub enum Content {
     /// A piece of text.
     Text(String),
 
+    /// A piece of content with bold emphasis.
+    Bold(Box<Content>),
+
+    /// A piece of content with italic emphasis.
+    Italic(Box<Content>),
+
     /// A link.
     Link(Box<Link>),
 

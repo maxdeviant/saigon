@@ -188,6 +188,8 @@ fn to_html_string(content: Content) -> String {
     match content {
         Content::Fragment(contents) => contents.into_iter().map(to_html_string).collect::<String>(),
         Content::Text(value) => value,
+        Content::Bold(content) => format!("<strong>{}</strong>", to_html_string(*content)),
+        Content::Italic(content) => format!("<em>{}</em>", to_html_string(*content)),
         Content::Link(link) => format!(
             "<a href=\"{}\">{}</a>",
             link.url.clone(),
