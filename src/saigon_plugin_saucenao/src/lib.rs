@@ -13,7 +13,7 @@ struct SearchResult {
 
 #[derive(Deserialize)]
 struct ImageData {
-    pub ext_urls: Vec<String>,
+    pub ext_urls: Option<Vec<String>>,
     pub title: Option<String>,
 }
 
@@ -31,7 +31,7 @@ impl Plugin for SauceNao {
     fn help(&self) -> Option<HelpText> {
         Some(HelpText {
             command: "saucenao &lt;image_url&gt;".into(),
-            text: "Returns the sauce of an image".into()
+            text: "Returns the sauce of an image".into(),
         })
     }
 
@@ -70,11 +70,21 @@ impl Plugin for SauceNao {
                     parts.push("<tr>".into());
 
                     parts.push("<td>".into());
-                    parts.push(format!(
-                        r#"<a href="{}">{}</a>"#,
-                        search_result.data.ext_urls[0],
-                        search_result.data.title.unwrap_or("No title".into())
-                    ));
+                    parts.push(
+                        if let Some(ext_url) = search_result
+                            .data
+                            .ext_urls
+                            .and_then(|ext_urls| ext_urls.into_iter().nth(0))
+                        {
+                            format!(
+                                r#"<a href="{}">{}</a>"#,
+                                ext_url,
+                                search_result.data.title.unwrap_or("[no title]".into())
+                            )
+                        } else {
+                            search_result.data.title.unwrap_or("[no title]".into())
+                        },
+                    );
                     parts.push("</td>".into());
 
                     parts.push("</tr>".into());
