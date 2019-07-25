@@ -186,6 +186,7 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
 
 fn to_html_string(content: Content) -> String {
     match content {
+        Content::Fragment(contents) => contents.into_iter().map(to_html_string).collect::<String>(),
         Content::Text(value) => value,
         Content::Link(link) => format!(
             "<a href=\"{}\">{}</a>",

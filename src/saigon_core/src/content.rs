@@ -106,6 +106,11 @@ impl TableColumn {
 /// A piece of content.
 #[derive(Debug)]
 pub enum Content {
+    /// A fragment of content.
+    ///
+    /// This can be used to return multiple elements.
+    Fragment(Box<Vec<Content>>),
+
     /// A piece of text.
     Text(String),
 
