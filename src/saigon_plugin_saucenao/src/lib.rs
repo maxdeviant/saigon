@@ -8,7 +8,13 @@ struct SearchResponse {
 
 #[derive(Deserialize)]
 struct SearchResult {
+    pub header: ImageHeader,
     pub data: ImageData,
+}
+
+#[derive(Deserialize)]
+struct ImageHeader {
+    pub similarity: String,
 }
 
 #[derive(Deserialize)]
@@ -60,6 +66,10 @@ impl Plugin for SauceNao {
                 parts.push("Title".into());
                 parts.push("</th>".into());
 
+                parts.push("<th>".into());
+                parts.push("Similarity".into());
+                parts.push("</th>".into());
+
                 parts.push("</tr>".into());
 
                 parts.push("</thead>".into());
@@ -85,6 +95,10 @@ impl Plugin for SauceNao {
                             search_result.data.title.unwrap_or("[no title]".into())
                         },
                     );
+                    parts.push("</td>".into());
+
+                    parts.push("<td>".into());
+                    parts.push(search_result.header.similarity);
                     parts.push("</td>".into());
 
                     parts.push("</tr>".into());
