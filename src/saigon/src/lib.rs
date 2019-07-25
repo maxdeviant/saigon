@@ -8,7 +8,7 @@ use std::net::SocketAddr;
 use log::{debug, LevelFilter};
 use parking_lot::RwLock;
 use rocket::State;
-use saigon_core::{Plugin, PluginResponse, Source};
+use saigon_core::{HelpText, Plugin, PluginResponse, Source};
 
 pub type BoxedSource = Box<dyn Source + Send + Sync>;
 
@@ -133,16 +133,58 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
 
     if let Some(command) = command {
         if command.value.to_lowercase() == "help" {
-            let mut help = bot
+            let mut help_texts = bot
                 .read()
                 .plugins
                 .iter()
                 .filter_map(|plugin| plugin.help())
-                .collect::<Vec<String>>();
+                .collect::<Vec<HelpText>>();
 
-            help.insert(0, "help - displays help information".into());
+            help_texts.insert(
+                0,
+                HelpText {
+                    command: "help".into(),
+                    text: "Displays help information".into(),
+                },
+            );
 
-            return help.join("<br>");
+            let mut parts: Vec<String> = Vec::new();
+
+            parts.push("<table>".into());
+
+            parts.push("<thead>".into());
+
+            parts.push("<tr>".into());
+            parts.push("<th>".into());
+            parts.push("Command".into());
+            parts.push("</th>".into());
+            parts.push("<th>".into());
+            parts.push("Description".into());
+            parts.push("</th>".into());
+            parts.push("</tr>".into());
+
+            parts.push("</thead>".into());
+
+            parts.push("<tbody>".into());
+
+            for help in help_texts {
+                parts.push("<tr>".into());
+                parts.push("<td>".into());
+                parts.push("<code>".into());
+                parts.push(help.command);
+                parts.push("</code>".into());
+                parts.push("</td>".into());
+                parts.push("<td>".into());
+                parts.push(help.text);
+                parts.push("</td>".into());
+                parts.push("</tr>".into());
+            }
+
+            parts.push("</tbody>".into());
+
+            parts.push("</table>".into());
+
+            return parts.into_iter().collect::<String>();
         }
 
         let mut bot = bot.write();

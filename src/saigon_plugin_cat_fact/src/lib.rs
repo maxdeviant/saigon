@@ -1,4 +1,4 @@
-use saigon_core::{Command, Plugin, PluginResponse, PluginResult};
+use saigon_core::{Command, HelpText, Plugin, PluginResponse, PluginResult};
 use serde::Deserialize;
 
 pub struct CatFact;
@@ -18,8 +18,11 @@ impl Plugin for CatFact {
         env!("CARGO_PKG_VERSION").into()
     }
 
-    fn help(&self) -> Option<String> {
-        Some("cat fact - returns a fun fact about cats.".into())
+    fn help(&self) -> Option<HelpText> {
+        Some(HelpText {
+            command: "cat fact".into(),
+            text: "Returns a fun fact about cats".into(),
+        })
     }
 
     fn receive(&mut self, command: &Command) -> PluginResult {

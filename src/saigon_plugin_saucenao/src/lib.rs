@@ -1,4 +1,4 @@
-use saigon_core::{Command, Plugin, PluginResponse, PluginResult};
+use saigon_core::{Command, HelpText, Plugin, PluginResponse, PluginResult};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -28,8 +28,11 @@ impl Plugin for SauceNao {
         env!("CARGO_PKG_VERSION").into()
     }
 
-    fn help(&self) -> Option<String> {
-        Some("saucenao <image_url> - returns the sauce of an image.".into())
+    fn help(&self) -> Option<HelpText> {
+        Some(HelpText {
+            command: "saucenao &lt;image_url&gt;".into(),
+            text: "Returns the sauce of an image".into()
+        })
     }
 
     fn receive(&mut self, command: &Command) -> PluginResult {

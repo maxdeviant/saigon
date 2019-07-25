@@ -9,7 +9,7 @@ pub trait Plugin {
     fn version(&self) -> String;
 
     /// Returns the help text for the plugin.
-    fn help(&self) -> Option<String> {
+    fn help(&self) -> Option<HelpText> {
         None
     }
 
@@ -18,6 +18,7 @@ pub trait Plugin {
 }
 
 /// The response from a [`Plugin`].
+#[derive(Debug)]
 pub enum PluginResponse {
     /// The plugin ignored the [`Command`].
     Ignore,
@@ -28,3 +29,13 @@ pub enum PluginResponse {
 
 /// The result of a [`Plugin`] handling a [`Command`].
 pub type PluginResult = Result<PluginResponse, &'static str>;
+
+/// The help text for a [`Plugin`].
+#[derive(Debug)]
+pub struct HelpText {
+    /// The command.
+    pub command: String,
+
+    /// The help text.
+    pub text: String,
+}
