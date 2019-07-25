@@ -43,7 +43,7 @@ impl Plugin for HelloWorld {
 
 fn main() {
     let bot = BotBuilder::new(([127, 0, 0, 1], 3000))
-        .add_source(Box::new(HelloWorld))
+        .add_adapter(Box::new(HelloWorld))
         .add_plugin(Box::new(HelloWorld))
         .build()
         .unwrap();

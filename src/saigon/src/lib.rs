@@ -85,7 +85,7 @@ impl BotBuilder {
         self
     }
 
-    pub fn add_source(mut self, source: BoxedAdapter) -> Self {
+    pub fn add_adapter(mut self, source: BoxedAdapter) -> Self {
         self.adapters.push(source);
         self
     }
