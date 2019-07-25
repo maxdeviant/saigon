@@ -1,7 +1,12 @@
 [package]
 name = "saigon_core"
 version = "0.1.0"
+description = "Contains the core types for Saigon."
+repository = "https://github.com/maxdeviant/saigon/tree/master/src/saigon_core"
+categories = ["saigon"]
+keywords = ["saigon", "plugin"]
 authors = ["Marshall Bowers <elliott.codes@gmail.com>"]
+license = "MIT"
 edition = "2018"
 
 [dependencies]

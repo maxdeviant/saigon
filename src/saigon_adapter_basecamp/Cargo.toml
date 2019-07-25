@@ -1,7 +1,12 @@
 [package]
 name = "saigon_adapter_basecamp"
 version = "0.1.0"
+description = "A Saigon adapter for Basecamp."
+repository = "https://github.com/maxdeviant/saigon/tree/master/src/saigon_adapter_basecamp"
+categories = ["saigon"]
+keywords = ["saigon", "adapter"]
 authors = ["Marshall Bowers <elliott.codes@gmail.com>"]
+license = "MIT"
 edition = "2018"
 
 [dependencies]
