@@ -1,9 +1,10 @@
 use saigon::BotBuilder;
-use saigon_core::{Command, Plugin, PluginResponse, PluginResult, Source, User, UserId};
+use saigon_core::content::Content;
+use saigon_core::{Adapter, Command, Plugin, PluginResponse, PluginResult, User, UserId};
 
 pub struct HelloWorld;
 
-impl Source for HelloWorld {
+impl Adapter for HelloWorld {
     fn name(&self) -> String {
         "HelloWorld".into()
     }
@@ -33,10 +34,10 @@ impl Plugin for HelloWorld {
     }
 
     fn receive(&mut self, command: &Command) -> PluginResult {
-        Ok(PluginResponse::Success(format!(
+        Ok(PluginResponse::Success(Content::Text(format!(
             "Hello, world! The command was: {}",
             command.value
-        )))
+        ))))
     }
 }
 

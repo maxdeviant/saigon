@@ -8,9 +8,10 @@ use std::net::SocketAddr;
 use log::{debug, LevelFilter};
 use parking_lot::RwLock;
 use rocket::State;
-use saigon_core::{HelpText, Plugin, PluginResponse, Source};
+use saigon_core::content::Content;
+use saigon_core::{Adapter, HelpText, Plugin, PluginResponse};
 
-pub type BoxedSource = Box<dyn Source + Send + Sync>;
+pub type BoxedAdapter = Box<dyn Adapter + Send + Sync>;
 
 pub type BoxedPlugin = Box<dyn Plugin + Send + Sync>;
 
@@ -21,7 +22,7 @@ pub struct Config {
 
 pub struct Bot {
     config: Config,
-    sources: Vec<BoxedSource>,
+    adapters: Vec<BoxedAdapter>,
     plugins: Vec<BoxedPlugin>,
 }
 
@@ -35,7 +36,7 @@ impl Bot {
 
         rocket::ignite()
             .manage(RwLock::new(self))
-            .mount("/", routes![index, sources, plugins])
+            .mount("/", routes![index, adapters, plugins])
             .launch();
     }
 
@@ -67,7 +68,7 @@ impl Bot {
 pub struct BotBuilder {
     log_level: LevelFilter,
     addr: SocketAddr,
-    sources: Vec<BoxedSource>,
+    adapters: Vec<BoxedAdapter>,
     plugins: Vec<BoxedPlugin>,
 }
 
@@ -84,8 +85,8 @@ impl BotBuilder {
         self
     }
 
-    pub fn add_source(mut self, source: BoxedSource) -> Self {
-        self.sources.push(source);
+    pub fn add_source(mut self, source: BoxedAdapter) -> Self {
+        self.adapters.push(source);
         self
     }
 
@@ -100,7 +101,7 @@ impl BotBuilder {
                 log_level: self.log_level,
                 addr: self.addr,
             },
-            sources: self.sources,
+            adapters: self.adapters,
             plugins: self.plugins,
         })
     }
@@ -111,7 +112,7 @@ impl Default for BotBuilder {
         Self {
             log_level: LevelFilter::Info,
             addr: ([127, 0, 0, 1], 3000).into(),
-            sources: Vec::new(),
+            adapters: Vec::new(),
             plugins: Vec::new(),
         }
     }
@@ -124,7 +125,7 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
     let command = {
         let mut bot = bot.write();
 
-        bot.sources
+        bot.adapters
             .iter_mut()
             .find_map(|source| source.handle(&payload))
     };
@@ -148,43 +149,27 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
                 },
             );
 
-            let mut parts: Vec<String> = Vec::new();
+            use saigon_core::content::{Content, Table, TableColumn, TableRow};
 
-            parts.push("<table>".into());
+            let mut table = Table::new();
 
-            parts.push("<thead>".into());
-
-            parts.push("<tr>".into());
-            parts.push("<th>".into());
-            parts.push("Command".into());
-            parts.push("</th>".into());
-            parts.push("<th>".into());
-            parts.push("Description".into());
-            parts.push("</th>".into());
-            parts.push("</tr>".into());
-
-            parts.push("</thead>".into());
-
-            parts.push("<tbody>".into());
+            table.header.add_row(TableRow {
+                columns: vec![
+                    TableColumn::new(Content::Text("Command".into())),
+                    TableColumn::new(Content::Text("Description".into())),
+                ],
+            });
 
             for help in help_texts {
-                parts.push("<tr>".into());
-                parts.push("<td>".into());
-                parts.push("<code>".into());
-                parts.push(help.command);
-                parts.push("</code>".into());
-                parts.push("</td>".into());
-                parts.push("<td>".into());
-                parts.push(help.text);
-                parts.push("</td>".into());
-                parts.push("</tr>".into());
+                table.body.add_row(TableRow {
+                    columns: vec![
+                        TableColumn::new(Content::Text(format!("<code>{}</code>", help.command))),
+                        TableColumn::new(Content::Text(help.text)),
+                    ],
+                });
             }
 
-            parts.push("</tbody>".into());
-
-            parts.push("</table>".into());
-
-            return parts.into_iter().collect::<String>();
+            return to_html_string(Content::Table(Box::new(table)));
         }
 
         let mut bot = bot.write();
@@ -192,20 +177,76 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
         bot.plugins
             .iter_mut()
             .filter_map(|plugin| plugin.receive(&command).ok())
-            .filter_map(|res| match res {
-                PluginResponse::Success(res) => Some(res),
-                PluginResponse::Ignore => None,
-            })
+            .filter_map(display_response)
             .collect::<String>()
     } else {
         "NO COMMAND".into()
     }
 }
 
-#[get("/sources")]
-fn sources(bot: State<RwLock<Bot>>) -> String {
+fn to_html_string(content: Content) -> String {
+    match content {
+        Content::Text(value) => value,
+        Content::Link(link) => format!(
+            "<a href=\"{}\">{}</a>",
+            link.url.clone(),
+            to_html_string(link.text)
+        ),
+        Content::Table(table) => {
+            let mut parts: Vec<String> = Vec::new();
+
+            parts.push("<table>".into());
+
+            parts.push("<thead>".into());
+
+            for row in table.header.rows {
+                parts.push("<tr>".into());
+
+                for column in row.columns {
+                    parts.push("<th>".into());
+                    parts.push(to_html_string(column.value));
+                    parts.push("</th>".into());
+                }
+
+                parts.push("</tr>".into());
+            }
+
+            parts.push("</thead>".into());
+
+            parts.push("<tbody>".into());
+
+            for row in table.body.rows {
+                parts.push("<tr>".into());
+
+                for column in row.columns {
+                    parts.push("<td>".into());
+                    parts.push(to_html_string(column.value));
+                    parts.push("</td>".into());
+                }
+
+                parts.push("</tr>".into());
+            }
+
+            parts.push("</tbody>".into());
+
+            parts.push("</table>".into());
+
+            parts.into_iter().collect::<String>()
+        }
+    }
+}
+
+fn display_response(response: PluginResponse) -> Option<String> {
+    match response {
+        PluginResponse::Success(content) => Some(to_html_string(content)),
+        PluginResponse::Ignore => None,
+    }
+}
+
+#[get("/adapters")]
+fn adapters(bot: State<RwLock<Bot>>) -> String {
     bot.read()
-        .sources
+        .adapters
         .iter()
         .map(|source| format!("{}: v{}\n", source.name(), source.version()))
         .collect::<String>()

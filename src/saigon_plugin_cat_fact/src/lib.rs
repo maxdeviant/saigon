@@ -1,3 +1,4 @@
+use saigon_core::content::Content;
 use saigon_core::{Command, HelpText, Plugin, PluginResponse, PluginResult};
 use serde::Deserialize;
 
@@ -33,7 +34,7 @@ impl Plugin for CatFact {
                     .json()
                     .unwrap();
 
-                Ok(PluginResponse::Success(res.fact))
+                Ok(PluginResponse::Success(Content::Text(res.fact)))
             }
             _ => Ok(PluginResponse::Ignore),
         }

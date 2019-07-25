@@ -2,19 +2,22 @@
 
 //! Contains the core types for Saigon.
 
+#[allow(missing_docs)]
+pub mod content;
+
 mod plugin;
 
 pub use plugin::*;
 
-/// A Saigon source.
-pub trait Source {
-    /// Returns the source's name.
+/// A Saigon adapter.
+pub trait Adapter {
+    /// Returns the adapter's name.
     fn name(&self) -> String;
 
-    /// Returns the source's version.
+    /// Returns the adapter's version.
     fn version(&self) -> String;
 
-    /// Handles a payload for the source to produce a [`Command`].
+    /// Handles a payload for the adapter to produce a [`Command`].
     fn handle(&mut self, payload: &str) -> Option<Command>;
 }
 

@@ -1,3 +1,4 @@
+use saigon_core::content::{Content, Link, Table, TableColumn, TableRow};
 use saigon_core::{Command, HelpText, Plugin, PluginResponse, PluginResult};
 use serde::Deserialize;
 
@@ -54,63 +55,46 @@ impl Plugin for SauceNao {
                 .json()
                 .unwrap();
 
-                let mut parts: Vec<String> = Vec::new();
-
-                parts.push("<table>".into());
-
-                parts.push("<thead>".into());
-
-                parts.push("<tr>".into());
-
-                parts.push("<th>".into());
-                parts.push("Title".into());
-                parts.push("</th>".into());
-
-                parts.push("<th>".into());
-                parts.push("Similarity".into());
-                parts.push("</th>".into());
-
-                parts.push("</tr>".into());
-
-                parts.push("</thead>".into());
-
-                parts.push("<tbody>".into());
+                let mut table = Table::new();
+                table.header.add_row(TableRow {
+                    columns: vec![
+                        TableColumn {
+                            value: Content::Text("Title".into()),
+                        },
+                        TableColumn {
+                            value: Content::Text("Similarity".into()),
+                        },
+                    ],
+                });
 
                 for search_result in res.results {
-                    parts.push("<tr>".into());
+                    let mut row = TableRow::new();
 
-                    parts.push("<td>".into());
-                    parts.push(
+                    row.add_column(TableColumn::new(
                         if let Some(ext_url) = search_result
                             .data
                             .ext_urls
                             .and_then(|ext_urls| ext_urls.into_iter().nth(0))
                         {
-                            format!(
-                                r#"<a href="{}">{}</a>"#,
-                                ext_url,
-                                search_result.data.title.unwrap_or("[no title]".into())
-                            )
+                            Content::Link(Box::new(Link {
+                                url: ext_url,
+                                text: Content::Text(
+                                    search_result.data.title.unwrap_or("[no title]".into()),
+                                ),
+                            }))
                         } else {
-                            search_result.data.title.unwrap_or("[no title]".into())
+                            Content::Text(search_result.data.title.unwrap_or("[no title]".into()))
                         },
-                    );
-                    parts.push("</td>".into());
+                    ));
 
-                    parts.push("<td>".into());
-                    parts.push(search_result.header.similarity);
-                    parts.push("</td>".into());
+                    row.add_column(TableColumn::new(Content::Text(
+                        search_result.header.similarity,
+                    )));
 
-                    parts.push("</tr>".into());
+                    table.body.add_row(row);
                 }
 
-                parts.push("</tbody>".into());
-
-                parts.push("</table>".into());
-
-                Ok(PluginResponse::Success(
-                    parts.into_iter().collect::<String>(),
-                ))
+                Ok(PluginResponse::Success(Content::Table(Box::new(table))))
             }
             _ => Ok(PluginResponse::Ignore),
         }

@@ -1,3 +1,4 @@
+use crate::content::Content;
 use crate::Command;
 
 /// A Saigon plugin.
@@ -24,7 +25,7 @@ pub enum PluginResponse {
     Ignore,
 
     /// The plugin successfully handled the [`Command`].
-    Success(String),
+    Success(Content),
 }
 
 /// The result of a [`Plugin`] handling a [`Command`].

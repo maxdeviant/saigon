@@ -1,9 +1,9 @@
-use saigon_core::{Command, Source, User, UserId};
+use saigon_core::{Adapter, Command, User, UserId};
 use serde::Deserialize;
 
 pub struct Basecamp;
 
-impl Source for Basecamp {
+impl Adapter for Basecamp {
     fn name(&self) -> String {
         env!("CARGO_PKG_NAME").into()
     }
