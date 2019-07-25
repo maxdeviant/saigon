@@ -133,13 +133,16 @@ fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
 
     if let Some(command) = command {
         if command.value.to_lowercase() == "help" {
-            return bot
+            let mut help = bot
                 .read()
                 .plugins
                 .iter()
                 .filter_map(|plugin| plugin.help())
-                .collect::<Vec<String>>()
-                .join("<br>");
+                .collect::<Vec<String>>();
+
+            help.insert(0, "help - displays help information".into());
+
+            return help.join("<br>");
         }
 
         let mut bot = bot.write();
