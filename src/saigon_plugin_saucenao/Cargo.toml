@@ -1,6 +1,6 @@
 [package]
 name = "saigon_plugin_saucenao"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Saigon plugin providing reverse image searching powered by SauceNAO."
 repository = "https://github.com/maxdeviant/saigon/tree/master/src/saigon_plugin_saucenao"
 keywords = ["saigon", "plugin"]

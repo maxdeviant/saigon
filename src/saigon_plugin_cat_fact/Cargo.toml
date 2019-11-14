@@ -1,6 +1,6 @@
 [package]
 name = "saigon_plugin_cat_fact"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Saigon plugin providing interesting facts about cats."
 repository = "https://github.com/maxdeviant/saigon/tree/master/src/saigon_plugin_cat_fact"
 keywords = ["saigon", "plugin"]
