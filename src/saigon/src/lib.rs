@@ -7,6 +7,7 @@ use std::net::SocketAddr;
 
 use log::{debug, LevelFilter};
 use parking_lot::RwLock;
+use rocket::Data;
 use rocket::State;
 use saigon_core::content::Content;
 use saigon_core::{Adapter, HelpText, Plugin, PluginResponse};
@@ -119,7 +120,10 @@ impl Default for BotBuilder {
 }
 
 #[post("/", data = "<payload>")]
-fn index(bot: State<RwLock<Bot>>, payload: String) -> String {
+fn index(bot: State<RwLock<Bot>>, payload: Data) -> String {
+    let mut buffer = Vec::new();
+    payload.stream_to(&mut buffer).unwrap();
+    let payload = std::str::from_utf8(&buffer).unwrap();
     debug!(target: "saigon", "Payload is {}", payload);
 
     let command = {
