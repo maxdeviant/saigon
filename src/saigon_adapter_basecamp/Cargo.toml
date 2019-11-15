@@ -1,6 +1,6 @@
 [package]
 name = "saigon_adapter_basecamp"
-version = "0.1.1"
+version = "0.1.2"
 description = "A Saigon adapter for Basecamp."
 repository = "https://github.com/maxdeviant/saigon/tree/master/src/saigon_adapter_basecamp"
 keywords = ["saigon", "adapter"]
